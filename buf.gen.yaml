@@ -12,6 +12,6 @@ inputs:
 
 plugins:
   - remote: buf.build/protocolbuffers/go
-    out: .
+    out: module
     opt:
       - module=github.com/authaas/token-go
