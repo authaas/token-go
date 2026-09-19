@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.1.3 - 2026-09-19
+#### Bug Fixes
+- simple is always harder. - (40b20fb) - Nathan Blair
+
+- - -
+
 ## 0.1.2 - 2026-09-19
 #### Bug Fixes
 - still fixing release - (0500457) - Nathan Blair
