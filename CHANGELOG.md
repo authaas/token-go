@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.1.5 - 2026-09-19
+#### Bug Fixes
+- hoist the module into the subdirectory - (5014e1d) - Nathan Blair
+
+- - -
+
 ## 0.1.4 - 2026-09-19
 #### Bug Fixes
 - commit only the required files - (59a531e) - Nathan Blair
