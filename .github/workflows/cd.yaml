@@ -33,12 +33,12 @@ jobs:
         id: commit
         shell: bash
         run: |
-          COMMIT=$(git commit -m "chore: generate code from protos")
+          COMMIT=$(git commit-tree $(git write-tree) -m "chore: generate code from protos")
           echo "COMMIT=${COMMIT}" >> $GITHUB_OUTPUT
 
       - name: Create release tag
         shell: bash
-        run: git tag v${{ github.ref_name }}
+        run: git tag v${{ github.ref_name }} ${{ steps.commit.outputs.COMMIT }}
 
       - name: Push gen commit
         shell: bash
