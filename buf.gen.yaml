@@ -1,0 +1,17 @@
+version: v2
+
+managed:
+  enabled: true
+  override:
+    - file_option: go_package
+      module: buf.build/authaas/token
+      value: github.com/authaas/token-go;token
+
+inputs:
+  - module: buf.build/authaas/token
+
+plugins:
+  - remote: buf.build/protocolbuffers/go
+    out: .
+    opt:
+      - module=github.com/authaas/token-go

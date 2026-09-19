@@ -1,0 +1,55 @@
+name: CD
+
+run-name: Publish ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*.*.*'
+      - '!v*'
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GIT_INDEX_FILE: .git/release-index
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Generate code from protos
+        uses: katastroma/skeuotheke/.github/actions/proto-buf-gen@v0
+
+      - name: Configure git
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Stage the module
+        shell: bash
+        run: git add -f go.mod go.sum LICENSE '*.go'
+
+      - name: Create orphan commit
+        id: commit
+        shell: bash
+        run: |
+          COMMIT=$(git commit-tree $(git write-tree) -m "chore: generate code from protos")
+          echo "COMMIT=${COMMIT}" >> $GITHUB_OUTPUT
+
+      - name: Create release tag
+        shell: bash
+        run: git tag v${{ github.ref_name }} ${{ steps.commit.outputs.COMMIT }}
+
+      - name: Push gen commit
+        shell: bash
+        run: git push --force origin ${{ steps.commit.outputs.COMMIT }}:refs/heads/gen
+
+      - name: Push release tag
+        shell: bash
+        run: git push origin v${{ github.ref_name }}
