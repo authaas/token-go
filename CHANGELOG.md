@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.2.0 - 2026-09-20
+#### Features
+- add more token types - (9d64f96) - Nathan Blair
+
+- - -
+
 ## 0.1.6 - 2026-09-19
 #### Bug Fixes
 - generate to the module directory - (20d1a16) - Nathan Blair
