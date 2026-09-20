@@ -7,11 +7,11 @@ managed:
       module: buf.build/authaas/token
       value: github.com/authaas/token-go;token
     - file_option: go_package_prefix
-      module: buf.build/authaas/types
-      value: buf.build/gen/go/authaas/types/protocolbuffers/go
+      module: buf.build/authaas/identity
+      value: buf.build/gen/go/authaas/identity/protocolbuffers/go
 
 inputs:
-  - module: buf.build/authaas/token:0.2.0
+  - module: buf.build/authaas/token:0.2.1
 
 plugins:
   - remote: buf.build/protocolbuffers/go
