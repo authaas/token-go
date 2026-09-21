@@ -11,7 +11,7 @@ managed:
       value: buf.build/gen/go/authaas/identity/protocolbuffers/go
 
 inputs:
-  - module: buf.build/authaas/token:0.2.1
+  - module: buf.build/authaas/token:0.2.2
 
 plugins:
   - remote: buf.build/protocolbuffers/go

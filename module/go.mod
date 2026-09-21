@@ -1,4 +1,4 @@
-module github.com/authaas/token-go
+module github.com/authaas/token-bindings-go
 
 go 1.27.1
 
