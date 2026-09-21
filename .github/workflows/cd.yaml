@@ -10,9 +10,7 @@ on:
       - '!v*'
 
 jobs:
-  gen:
-    uses: katastroma/skeuotheke/.github/workflows/release-buf-proto.yaml@v0
+  release:
     permissions:
       contents: write
-    with:
-      ecosystem: module
+    uses: katastroma/skeuotheke/.github/workflows/release-tag.yaml@v0

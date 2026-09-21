@@ -4,43 +4,47 @@ package token
 import (
 	"time"
 
+	tokenpb "buf.build/gen/go/authaas/token/protocolbuffers/go/token"
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// Claims is the token SDK's JWT as jwt.Claims
+type Claims tokenpb.JWT
+
 // GetIssuer implements jwt.Claims.GetIssuer
-func (t *JWT) GetIssuer() (string, error) {
+func (t *Claims) GetIssuer() (string, error) {
 	return t.Iss, nil
 }
 
 // GetAudience implements jwt.Claims.GetAudience
-func (t *JWT) GetAudience() (jwt.ClaimStrings, error) {
+func (t *Claims) GetAudience() (jwt.ClaimStrings, error) {
 	return t.Aud, nil
 }
 
 // GetSubject implements jwt.Claims.GetSubject
-func (t *JWT) GetSubject() (string, error) {
+func (t *Claims) GetSubject() (string, error) {
 	return t.Sub, nil
 }
 
 // GetExpirationTime implements jwt.Claims.GetExpirationTime
 // Returns nil if Exp is nil (never expires)
-func (t *JWT) GetExpirationTime() (*jwt.NumericDate, error) {
+func (t *Claims) GetExpirationTime() (*jwt.NumericDate, error) {
 	if t.Exp == nil {
 		return nil, nil
 	}
-	return jwt.NewNumericDate(time.Unix(t.GetExp(), 0)), nil
+	return jwt.NewNumericDate(time.Unix(*t.Exp, 0)), nil
 }
 
 // GetIssuedAt implements jwt.Claims.GetIssuedAt
-func (t *JWT) GetIssuedAt() (*jwt.NumericDate, error) {
+func (t *Claims) GetIssuedAt() (*jwt.NumericDate, error) {
 	return jwt.NewNumericDate(time.Unix(t.Iat, 0)), nil
 }
 
 // GetNotBefore implements jwt.Claims.GetNotBefore
 // Returns nil if Nbf is nil (not set)
-func (t *JWT) GetNotBefore() (*jwt.NumericDate, error) {
+func (t *Claims) GetNotBefore() (*jwt.NumericDate, error) {
 	if t.Nbf == nil {
 		return nil, nil
 	}
-	return jwt.NewNumericDate(time.Unix(t.GetNbf(), 0)), nil
+	return jwt.NewNumericDate(time.Unix(*t.Nbf, 0)), nil
 }
