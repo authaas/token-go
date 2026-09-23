@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.0 - 2026-09-23
+#### Features
+- align new token realm ID - (a9dbfd9) - Nathan Blair
+
+- - -
+
 ## 0.4.0 - 2026-09-21
 #### Features
 - publish Claims as token.JWT - (e5f1c04) - Nathan Blair
