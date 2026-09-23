@@ -1,7 +1,9 @@
-buf.build/gen/go/authaas/identity/protocolbuffers/go v1.36.12-20260920174019-cb9ef3c3aa4c.2 h1:VcVJQZi6VEPkalVjo/RSkWyAnriLgOgzfo2csw0cbSM=
-buf.build/gen/go/authaas/identity/protocolbuffers/go v1.36.12-20260920174019-cb9ef3c3aa4c.2/go.mod h1:rDdpYTXLK9+NIevGNK7crsLovxjrQEgtJjFm7f+n7ME=
-buf.build/gen/go/authaas/token/protocolbuffers/go v1.36.12-20260920174249-1b86e4d5c13a.2 h1:YhAX4fOtUtFr0UWtqC9ajv6HPW6osSOxwqUl5kr5alc=
-buf.build/gen/go/authaas/token/protocolbuffers/go v1.36.12-20260920174249-1b86e4d5c13a.2/go.mod h1:y7yBxUGLS3fYgWYiMDDzmLr7jx2iiVz4vxyrqn/djtw=
+buf.build/gen/go/authaas/identity/protocolbuffers/go v1.36.12-20260922233804-b037abb32578.2 h1:Q+kmvSeJZkuj0YwrutV1es5KIzd8JrO3RgnBkSLBk2k=
+buf.build/gen/go/authaas/identity/protocolbuffers/go v1.36.12-20260922233804-b037abb32578.2/go.mod h1:rDdpYTXLK9+NIevGNK7crsLovxjrQEgtJjFm7f+n7ME=
+buf.build/gen/go/authaas/realm/protocolbuffers/go v1.36.12-20260923162914-d26a9bca8bb6.2 h1:+4+2haX90HziD7tV2kvPUqfbC8kMdiGLCHmxSSxtK0c=
+buf.build/gen/go/authaas/realm/protocolbuffers/go v1.36.12-20260923162914-d26a9bca8bb6.2/go.mod h1:VtKHAs+IghEJoGaGvyETKZB1cBCS43Jyag4IP8y9MWE=
+buf.build/gen/go/authaas/token/protocolbuffers/go v1.36.12-20260923204005-56b61a2f01c6.2 h1:BClqCZF0TybddKpADUMjX+gFMVcGpeXE62i0ArnjC2Q=
+buf.build/gen/go/authaas/token/protocolbuffers/go v1.36.12-20260923204005-56b61a2f01c6.2/go.mod h1:VMIMgbDi/i1mpKjMfEzDq7ZxFp1kpAIuD680OeamwWs=
 github.com/golang-jwt/jwt/v5 v5.3.1 h1:kYf81DTWFe7t+1VvL7eS+jKFVWaUnK9cB1qbwn63YCY=
 github.com/golang-jwt/jwt/v5 v5.3.1/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
