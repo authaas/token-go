@@ -7,18 +7,20 @@ import (
 	"slices"
 	"testing"
 	"time"
+	"uuid"
 
 	identitypb "buf.build/gen/go/authaas/identity/protocolbuffers/go/identity"
 	realmpb "buf.build/gen/go/authaas/realm/protocolbuffers/go/realm"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
-const (
-	identityID = "6f1b6f1e-4f7a-4f5e-9d9a-2b1c3d4e5f60"
-	realmID    = "1c9d5a2e-7b33-4a0e-9d2f-8a7b6c5d4e3f"
-	issuer     = "acme"
-)
+const issuer = "acme"
 
 var (
+	identityID = uuid.New().String()
+	realmID    = uuid.New().String()
+	subject    = uuid.New().String()
+
 	audience = []string{"api", "web"}
 
 	minted    = time.Now().Truncate(time.Second)
@@ -26,6 +28,17 @@ var (
 	notBefore = minted.Add(-time.Minute).Unix()
 	expiresAt = minted.Add(time.Hour).Unix()
 )
+
+func additional(t *testing.T, fields map[string]any) *structpb.Struct {
+	t.Helper()
+
+	s, err := structpb.NewStruct(fields)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	return s
+}
 
 func full(t *testing.T) *Claims {
 	t.Helper()
@@ -41,19 +54,23 @@ func full(t *testing.T) *Claims {
 		Iat:        issuedAt,
 		Nbf:        &nbf,
 		Exp:        &exp,
+		Additional: additional(t, map[string]any{
+			"sub":    subject,
+			"groups": []any{"admins"},
+		}),
 	}
 }
 
 func TestMarshalJSON(t *testing.T) {
-	t.Run("writes the claim names the token carries", func(t *testing.T) {
+	t.Run("writes the typed claims beside every additional one", func(t *testing.T) {
 		encoded, err := json.Marshal(full(t))
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
 		want := fmt.Sprintf(
-			`{"sub":%q,"rid":%q,"iss":%q,"aud":["api","web"],"iat":%d,"nbf":%d,"exp":%d}`,
-			identityID, realmID, issuer, issuedAt, notBefore, expiresAt,
+			`{"aud":["api","web"],"exp":%d,"groups":["admins"],"iat":%d,"iid":%q,"iss":%q,"nbf":%d,"rid":%q,"sub":%q}`,
+			expiresAt, issuedAt, identityID, issuer, notBefore, realmID, subject,
 		)
 
 		if string(encoded) != want {
@@ -61,11 +78,22 @@ func TestMarshalJSON(t *testing.T) {
 		}
 	})
 
-	t.Run("omits an audience, a not-before and an expiry that are unset", func(t *testing.T) {
-		claims := full(t)
-		claims.Aud = nil
-		claims.Nbf = nil
-		claims.Exp = nil
+	t.Run("gives no additional claim a typed claim's name, set or not", func(t *testing.T) {
+		claims := &Claims{
+			IdentityId: &identitypb.ID{Value: identityID},
+			RealmId:    &realmpb.ID{Value: realmID},
+			Iss:        issuer,
+			Iat:        issuedAt,
+			Additional: additional(t, map[string]any{
+				"rid": subject,
+				"iid": subject,
+				"iss": subject,
+				"iat": float64(expiresAt),
+				"aud": subject,
+				"nbf": float64(notBefore),
+				"exp": float64(expiresAt),
+			}),
+		}
 
 		encoded, err := json.Marshal(claims)
 		if err != nil {
@@ -73,8 +101,8 @@ func TestMarshalJSON(t *testing.T) {
 		}
 
 		want := fmt.Sprintf(
-			`{"sub":%q,"rid":%q,"iss":%q,"iat":%d}`,
-			identityID, realmID, issuer, issuedAt,
+			`{"iat":%d,"iid":%q,"iss":%q,"rid":%q}`,
+			issuedAt, identityID, issuer, realmID,
 		)
 
 		if string(encoded) != want {
@@ -82,13 +110,13 @@ func TestMarshalJSON(t *testing.T) {
 		}
 	})
 
-	t.Run("writes empty subject and realm when neither is set", func(t *testing.T) {
+	t.Run("writes empty realm, identity and issuer when none is set", func(t *testing.T) {
 		encoded, err := json.Marshal(&Claims{Iat: issuedAt})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		want := fmt.Sprintf(`{"sub":"","rid":"","iss":"","iat":%d}`, issuedAt)
+		want := fmt.Sprintf(`{"iat":%d,"iid":"","iss":"","rid":""}`, issuedAt)
 
 		if string(encoded) != want {
 			t.Errorf("encoded = %s, want %s", encoded, want)
@@ -131,6 +159,16 @@ func TestUnmarshalJSON(t *testing.T) {
 		if decoded.Exp == nil || *decoded.Exp != expiresAt {
 			t.Errorf("expiry = %v, want %d", decoded.Exp, expiresAt)
 		}
+
+		fields := decoded.Additional.GetFields()
+
+		if len(fields) != 2 {
+			t.Errorf("additional = %v, want only sub and groups", fields)
+		}
+
+		if got := fields["sub"].GetStringValue(); got != subject {
+			t.Errorf("sub = %q, want %q", got, subject)
+		}
 	})
 
 	t.Run("reads an audience written as one string", func(t *testing.T) {
@@ -155,7 +193,15 @@ func TestUnmarshalJSON(t *testing.T) {
 		}
 	})
 
-	t.Run("reports a claim set that does not decode", func(t *testing.T) {
+	t.Run("reports a claim set that is not an object", func(t *testing.T) {
+		var decoded Claims
+
+		if err := json.Unmarshal([]byte(`[]`), &decoded); err == nil {
+			t.Error("expected an error")
+		}
+	})
+
+	t.Run("reports a typed claim of the wrong type", func(t *testing.T) {
 		var decoded Claims
 
 		if err := json.Unmarshal([]byte(`{"iat":"soon"}`), &decoded); err == nil {
@@ -178,9 +224,16 @@ func TestRegisteredClaimAccessors(t *testing.T) {
 			t.Errorf("audience = %v, %v", aud, err)
 		}
 
-		subject, err := claims.GetSubject()
-		if err != nil || subject != identityID {
-			t.Errorf("subject = %q, %v", subject, err)
+		sub, err := claims.GetSubject()
+		if err != nil || sub != subject {
+			t.Errorf("subject = %q, %v", sub, err)
+		}
+	})
+
+	t.Run("answers with no subject when the token carries none", func(t *testing.T) {
+		sub, err := (&Claims{}).GetSubject()
+		if err != nil || sub != "" {
+			t.Errorf("subject = %q, %v, want none", sub, err)
 		}
 	})
 
